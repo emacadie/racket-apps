@@ -1,4 +1,6 @@
 #lang racket
+(require rackunit)
+
 #| Chapter 4 of 'Realm Of Racket' |#
 (printf "Chapter Four: Conditions and Decisions\n\n")
 (printf "Is 42 equal to 0? (zero? 42): ~a \n" (zero? 42))
@@ -6,7 +8,7 @@
 (printf "Are these symbols equal? (symbol=? 'a 'b): ~a \n" (symbol=? 'a 'b))
 
 (struct student (name id# dorm) #:transparent)
-(printf "Defining structure student: (struct student (name id# dorm) #:transparent): ~a \n" student)
+(printf "Defining structure student: (struct student (name id# dorm) #:transparent): ~a \n" student)(require rackunit)
 (define sophomore3 (student 'David 100234 'PG))
 (printf "Defining instance sophomore3: (define sophomore3 (student 'David 100234 'PG)): ~a \n" sophomore3 )
 (printf "Is this structure a student: (student? 'a): ~a \n" (student? 'a))
@@ -14,6 +16,7 @@
 (printf "Is this structure a student: (student? (student 1 2 3)): ~a \n" (student? (student 1 2 3)))
 (printf "Is this structure a student: (student? \"i am student\"): ~a \n"  (student? "i am student"))
 (printf "\tType predicates\n")
+(printf "A Racket predicate is just a function that returns either true or false\n")
 (printf "Here is a type predicate: (number? 'a): ~a \n" (number? 'a))
 (printf "Here is a type predicate: (string? \"hello world\"): ~a \n" (string? "hello world"))
 (printf "Here is a type predicate: (symbol? 'a): ~a \n" (symbol? 'a))
@@ -49,7 +52,7 @@
 (printf "Adding 0 to the front: (add-to-front-of-123 0): ~a \n" (add-to-front-of-123 0)) 
 (printf "Adding '(a b c) to the front: (add-to-front-of-123 '(a b c)): ~a \n"  (add-to-front-of-123 '(a b c)))
 
-;; left off: Page 56
+
 (printf "\n\tConditionals: If and Beyond\n")
 (printf "Here is if:
 (if (= (+ 1 2) 3)
@@ -165,9 +168,80 @@ Result: ~a \n"
 (printf "Defining list called 'tasks': (define tasks '(1 clean 3 homework 4 party))\n")
 (printf "Calling (member 3 tasks): ~a \n" (member 3 tasks))
 
-;; left off page 64
 (printf "\tMore Equality predicates\n")
+(struct point (x y) #:transparent)
+(define (distance-to-origin p)
+  (sqrt (+ (sqr (point-x p)) (sqr (point-y p)))))
+(printf "Created struct point and function distance-to-origin \n")
+(printf "Calling (distance-to-origin (point 3 4)): ~a \n" (distance-to-origin (point 3 4)))
+(printf "Calling (distance-to-origin (point 12 5)): ~a \n" (distance-to-origin (point 12 5)))
+(define pt1 (point -1 2))
+(define pt2 (point -1 2))
+(printf "Defined point pt1: ~a and point pt2: ~a\n" pt1 pt2)
+(printf "equal? checks that both arguments belong to the same class of data,
+namely points, and that all their pieces— x and y here—are equal? , too\n")
+(printf "So it checks value\n")
+(printf "Is pt1 equal to pt2: (equal? pt1 pt2): ~a \n" (equal? pt1 pt2))
+(printf "eq? whether the two given concrete structures were created via the exact same call to the constructor\n")
+(printf "(eq? pt1 pt2): ~a\n" (eq? pt1 pt2))
+(printf "(eq? pt1 pt1): ~a\n" (eq? pt1 pt1))
+(printf "(eq? pt2 pt2): ~a\n" (eq? pt2 pt2))
+(define pt3 pt1)
+(printf "You can give a new name to an existing value: (define pt3 pt1)\n")
+(printf "You can then call eq? on that: (eq? pt1 pt3): ~a \n" (eq? pt1 pt3))
+(define (eq-first-items list1 list2)
+  (eq? (first list1) (first list2)))
+(printf "Defined eq-first-items function to check equality on the first item of a composite/nested structure\n")
+(printf "(eq-first-items (cons pt1 empty) (cons pt3 empty)): ~a \n" (eq-first-items (cons pt1 empty) (cons pt3 empty)))
+(printf "(eq-first-items (cons pt1 empty) (cons pt2 empty)): ~a \n" (eq-first-items (cons pt1 empty) (cons pt2 empty)))
+(printf "(eq-first-items '(1 2 3) '(2 2 3)): ~a \n"(eq-first-items '(1 2 3) '(2 2 3)))
+(printf "(eq-first-items '(1 2 3) '(1 2 3)): ~a \n"(eq-first-items '(1 2 3) '(1 2 3)))
+
+(define (equal-first-items list1 list2)
+  (equal? (first list1) (first list2)))
+(printf "Defined equal-first-items function to check equality on the first item of a composite/nested structure\n")
+(printf "(equal-first-items (cons pt1 empty) (cons pt3 empty)): ~a \n" (equal-first-items (cons pt1 empty) (cons pt3 empty)))
+(printf "(equal-first-items (cons pt1 empty) (cons pt2 empty)): ~a \n" (equal-first-items (cons pt1 empty) (cons pt2 empty)))
+(printf "(equal-first-items '(1 2 3) '(2 2 3)): ~a \n"(equal-first-items '(1 2 3) '(2 2 3)))
+(printf "(equal-first-items '(1 2 3) '(1 2 3)): ~a \n"(equal-first-items '(1 2 3) '(1 2 3)))
+;; left off page 68
+(printf "\tTesting\n")
+(printf "Added (require rackunit) to the top to do unit tests\n")
+(printf "Most commonly used function: check-equal?: (check-equal? (add1 5) 6): ~a \n" (check-equal? (add1 5) 6))
+(printf "Let's try: (check-equal? (add1 5) 7): ~a \n" (check-equal? (add1 5) 7))
+(printf "Let's try: (check-equal? (sub1 (add1 5)) 5): ~a\n" (check-equal? (sub1 (add1 5)) 5))
+(printf "check-equal? also takes a string arg for printing a message\n")
+(printf "Let's try: (check-equal? 5 6 \"NUMBERS MATTER!\"): ~a \n" (check-equal? 5 6 "NUMBERS MATTER!"))
+(printf "\nLet's try some other tests in the book\n")
+(printf "check-not-equal? (check-not-equal? 5 4): ~a \n" (check-not-equal? 5 4))
+(printf "check-not-equal? (check-not-equal? pt1 pt2): ~a \n" (check-not-equal? pt1 pt2))
+(printf "check-not-equal? (check-not-equal? pt1 pt3): ~a \n" (check-not-equal? pt1 pt3))
+(define pt4 (point 1 2))
+(printf "Defined pt4 with different coordinates than the others\n")
+(printf "check-not-equal? checks if things are not equal\n")
+(printf "check-not-equal? (check-not-equal? pt1 pt4): ~a \n" (check-not-equal? pt1 pt4))
+(printf "check-not-equal? (check-not-equal? '(1 2 3 4) '(1 2 3 5)): ~a \n" (check-not-equal? '(1 2 3 4) '(1 2 3 5) "Are they equal?"))
+(printf "check-not-equal? (check-not-equal? '(1 2 3 4) '(1 2 3 4)): ~a \n" (check-not-equal? '(1 2 3 4) '(1 2 3 4) "Are they equal?"))
+(printf "check-pred Checks the second argument against the predicate\n")
+(printf "(check-pred number? 5): ~a \n" (check-pred number? 5))
+(printf "(check-pred number? 'a): ~a \n" (check-pred number? 'a "That is a symbol"))
+(printf "(check-pred symbol? 'a): ~a \n" (check-pred symbol? 'a))
+(printf "(check-pred list? '(1 2 3)): ~a \n" (check-pred list? '(1 2 3)))
+(printf "check-= will if two numbers are within a certain range of each other\n")
+(printf "(check-= 1 3 2): ~a \n" (check-= 1 3 2))
+(printf "(check-= 10 30 20): ~a \n" (check-= 10 30 20))
+(printf "(check-= 10 30 15): ~a \n" (check-= 10 30 15 "10 and 30 not within that range (15)"))
+(printf "check-true will check if the argument is #t\n")
+(printf "(check-true (odd? 71)): ~a \n" (check-true (odd? 71) "Will this message print?"))
+(printf "(check-true (odd? 72)): ~a \n" (check-true (odd? 72) "72 is not an odd number"))
+(printf "check-false will check if the argument is #f\n")
+(printf "(check-false (odd? 42)): ~a \n" (check-false (odd? 42)) )
+(printf "(check-false (odd? 43)): ~a \n" (check-false (odd? 43) "Checking odd on 43 returns true") )
+(printf "check-not-false will check if the argument is not #f\n")
+(printf "(check-not-false
+    (member 5 '(1 2 5))): ~a \n"
+        (check-not-false
+         (member 5 '(1 2 5))))
 
 
 
-        
