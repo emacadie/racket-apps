@@ -12,7 +12,7 @@
 
 (define (smaller)
   ;; (set! variable expression)
-  ;; set! will set upper to the function call after it
+  ;; set! will set upper to the function call which follows it
   (set! upper (max lower (sub1 (guess))))
   (guess))
 
