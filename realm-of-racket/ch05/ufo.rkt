@@ -1,6 +1,9 @@
 #lang racket
-(require 2htdp/universe 2htdp/image)
+(require 2htdp/universe ;; big-bang
+2htdp/image) ;; bitmap, empty-scene, place-image
 ;; those are libraries
+;; it would be nice if I could do something like Clojure or Java/Groovy:
+;; have a way to tell either in the require statement or each usage where something is from
 
 (define WIDTH 200)
 (define HEIGHT 300)
