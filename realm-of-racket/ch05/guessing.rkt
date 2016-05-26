@@ -2,7 +2,10 @@
 (require 2htdp/universe 2htdp/image)
 (require (prefix-in universe: 2htdp/universe) 
          (prefix-in image: 2htdp/image))
+;; state
 (struct interval (small big) #:transparent)
+
+;; constants
 (define TEXT-SIZE 20)
 (define WIDTH 800)
 (define HEIGHT 400)
@@ -27,6 +30,7 @@
     HELP-TEXT2 TEXT-X TEXT-LOWER-Y "left" "bottom"
     (image:empty-scene WIDTH HEIGHT))))
 
+;; handlers
 (define (deal-with-guess w key)
   (cond [(universe:key=? key "up") (bigger w)]
         [(universe:key=? key "down") (smaller w) ]
@@ -55,6 +59,7 @@
 (define (single? w)
   (= (interval-small w) (interval-big w)))
 
+;; main function
 ;; click "Run" and type "(start 1 100)"
 (define (start lower upper)
   (universe:big-bang (interval lower upper)
