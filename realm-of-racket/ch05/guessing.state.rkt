@@ -1,9 +1,9 @@
 #lang racket
-(require 2htdp/universe 2htdp/image)
+;; (require 2htdp/universe 2htdp/image)
 (require (prefix-in universe: 2htdp/universe) 
          (prefix-in image: 2htdp/image))
 ;; state
-(struct interval (small big) #:transparent)
+(struct interval (small big numguesses) #:transparent)
 
 ;; constants
 (define TEXT-SIZE 20)
@@ -40,22 +40,24 @@
 
 ;; "bigger" can be defined after it is used
 (define (bigger w)
-  (printf "w: ~a\n" w)
-  (interval (min (interval-big w) (add1 (guess w)))
-            (interval-big w)))
+  (interval (min (interval-big w) (add1 (guess w))) ; small
+            (interval-big w)                        ; big 
+            (add1 (interval-numguesses w)) ))       ; numguesses
 
 (define (smaller w)
-  (interval (interval-small w)
-            (max (interval-small w) (sub1 (guess w)))))
+  (printf "Here is w: ~a \n" w)
+  (interval (interval-small w)                        ; small
+            (max (interval-small w) (sub1 (guess w))) ; big
+            (add1 (interval-numguesses w))))          ; numguesses
 
 (define (guess w)
   (quotient (+ (interval-small w) (interval-big w)) 2))
 
 (define (render w)
-  (image:overlay (text (number->string (guess w)) SIZE COLOR) MT-SC))
+  (image:overlay (image:text (number->string (guess w)) SIZE COLOR) MT-SC))
 
 (define (render-last-scene w)
-  (image:overlay (text "End" SIZE COLOR) MT-SC))
+  (image:overlay (image:text "End" SIZE COLOR) MT-SC))
 
 (define (single? w)
   (= (interval-small w) (interval-big w)))
@@ -63,7 +65,7 @@
 ;; main function
 ;; click "Run" and type "(start 1 100)"
 (define (start lower upper)
-  (universe:big-bang (interval lower upper)
+  (universe:big-bang (interval lower upper 0)
             (universe:on-key deal-with-guess)
             (universe:to-draw render)
             (universe:stop-when single? render-last-scene)))
