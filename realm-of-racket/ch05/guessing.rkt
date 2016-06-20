@@ -67,3 +67,68 @@
             (universe:on-key deal-with-guess)
             (universe:to-draw render)
             (universe:stop-when single? render-last-scene)))
+
+;; from https://github.com/racket/realm/tree/master/chapter5
+;; tests                                    
+
+(module+ test
+  
+  (require rackunit rackunit/text-ui)
+  
+  ;; testing the 'model' functions for basic guesses 
+  
+  (check-true (single? (interval 50 50)))
+  (check-false (single? (interval 50 51)))
+  
+  (check-equal? (guess (interval 0 100)) 50)
+  (check-equal? (guess (interval 50 100)) 75)
+  (check-equal? (guess (interval 0 50)) 25)
+  
+  (check-equal? (smaller (interval 0 100)) (interval 0 49))
+  (check-equal? (smaller (interval 0 000)) (interval 0 0))
+  (check-equal? (smaller (interval 0 50)) (interval 0 24))
+  (check-equal? (smaller (interval 50 100)) (interval 50 74))
+  (check-equal? (smaller (bigger (bigger (interval 0 100))))
+                (interval 76 87))
+  
+  (check-equal? (bigger (interval 0 100)) (interval 51 100))
+  (check-equal? (bigger (interval 0 000)) (interval 0 0))
+  (check-equal? (bigger (interval 0 100)) (interval 51 100))
+  (check-equal? (bigger (interval 51 100)) (interval 76 100))
+  (check-equal? (bigger (interval 0 50)) (interval 26 50))
+  
+  (check-equal? (deal-with-guess (interval 0 100) "up") (interval 51 100))
+  (check-equal? (deal-with-guess (interval 0 100) "down") (interval 0 49))
+  (check-equal? (deal-with-guess (interval 0 100) "=") 
+                (universe:stop-with (interval 0 100)))
+  (check-equal? (deal-with-guess (interval 0 100) "q") 
+                (universe:stop-with (interval 0 100)))
+  (check-equal? (deal-with-guess (interval 0 100) "up") 
+                (interval 51 100))
+  (check-equal? (deal-with-guess (interval 50 100) "up") 
+                (interval 76 100))
+  (check-equal? (deal-with-guess (interval 0 100) "down")
+                (interval 0 49))
+  (check-equal? (deal-with-guess (interval 0 50) "down") 
+                (interval 0 24))
+  (check-equal? (deal-with-guess (interval 50 100) "e") 
+                (interval 50 100))
+  (check-equal? (deal-with-guess (interval 0 100) "f") 
+                (interval 0 100))
+  (check-equal? (deal-with-guess (deal-with-guess (interval 1 10) "up") 
+                                 "down")
+                (interval 6 7))
+
+  ;; testing the view functions 
+  
+  (check-equal? (render (interval 0 100))
+                (image:overlay (image:text "50" 20 "red") MT-SC))  
+  (check-equal? (render (interval 0 100))
+                (image:overlay (image:text "50" SIZE COLOR) MT-SC))
+  (check-equal? (render (interval 0 50))
+                (image:overlay (image:text "25" SIZE COLOR) MT-SC))
+  (check-equal? (render (interval 50 100))
+                (image:overlay (image:text "75" SIZE COLOR) MT-SC))
+  
+"all tests run")
+
